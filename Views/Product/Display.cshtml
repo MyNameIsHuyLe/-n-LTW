@@ -1,0 +1,21 @@
+﻿@model website_ban_hang.Models.Product
+
+<h2>Product Details</h2>
+
+<div>
+    <h4>Name: @Model.Name</h4>
+    <h4>Price: @Model.Price</h4>
+    <h4>Description: @Model.Description</h4>
+
+    <img src="@Model.ImageUrl" alt="Product Image" style="width: 300px; height: auto;" />
+
+    @if (Model.Images != null)
+    {
+        foreach (var img in Model.Images)
+        {
+            <img src="@img.Url" alt="Product Image" style="width: 300px; height: auto; margin-right: 5px;" />
+        }
+    }
+</div>
+
+<a asp-action="Index">Back to List</a>

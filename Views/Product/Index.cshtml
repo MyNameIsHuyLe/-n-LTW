@@ -1,0 +1,93 @@
+﻿@model IEnumerable<website_ban_hang.Models.Product>
+
+@{
+    ViewData["Title"] = "Products List";
+}
+
+<!-- HEADER -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h2 class="fw-bold">Products List</h2>
+    </div>
+
+    <div class="col-md-6 d-flex justify-content-end">
+        <a asp-action="Add" class="btn btn-success">
+            <i class="fa-solid fa-plus"></i>
+            Add New Product
+        </a>
+    </div>
+</div>
+
+<!-- TABLE -->
+<table class="table table-hover table-striped align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th style="width:120px;">Image</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Description</th>
+            <th style="width:200px;">Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="5" class="text-center text-muted py-4">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i>
+                    Không tìm thấy sản phẩm
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var product in Model)
+            {
+                <tr>
+                    <td>
+                        @if (!string.IsNullOrEmpty(product.ImageUrl))
+                        {
+                            <img src="@product.ImageUrl"
+                                 class="img-thumbnail"
+                                 style="max-width:80px;" />
+                        }
+                        else
+                        {
+                            <img src="https://placehold.co/80x60?text=No+Image"
+                                 class="img-thumbnail" />
+                        }
+                    </td>
+
+                    <td class="fw-bold">@product.Name</td>
+
+                    <td class="text-danger fw-bold">$@product.Price</td>
+
+                    <td>@product.Description</td>
+
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <a asp-action="Display"
+                               asp-route-id="@product.Id"
+                               class="btn btn-info text-white">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+
+                            <a asp-action="Update"
+                               asp-route-id="@product.Id"
+                               class="btn btn-warning text-white">
+                                <i class="fa-solid fa-pen"></i>
+                            </a>
+
+                            <a asp-action="Delete"
+                               asp-route-id="@product.Id"
+                               class="btn btn-danger">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
