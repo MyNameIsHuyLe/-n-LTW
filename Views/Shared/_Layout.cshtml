@@ -1,146 +1,195 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@using Microsoft.AspNetCore.Http
+
+<!DOCTYPE html>
+
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Website Bán Hàng</title>
+    <title>@ViewData["Title"] - TechShop</title>
 
-    <!-- Bootstrap -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
 
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" />
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" />
 
-    <style>
-            body {
-                background-color: #f8f9fa;
-                display: flex;
-                flex-direction: column;
-                min-height: 100vh;
-            }
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-            .main-content {
-                flex: 1;
-            }
+<style>
+    body {
+        background-color: #f8f9fa;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
 
-            .navbar-brand {
-                font-weight: bold;
-                letter-spacing: 1px;
-            }
+    .main-content {
+        flex: 1;
+    }
 
-            footer {
-                background-color: #212529;
-                color: #dee2e6;
-            }
-    </style>
+    .navbar-brand {
+        font-weight: bold;
+    }
+
+    footer {
+        background-color: #212529;
+        color: white;
+    }
+</style>
+
+
 </head>
+
 <body>
 
-    <!-- ===== NAVBAR ===== -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4">
-        <div class="container">
 
-            <!-- LOGO -->
-            <a class="navbar-brand text-warning"
-               asp-controller="Product"
-               asp-action="Index">
-                <i class="fa-solid fa-shop me-2"></i>TechShop
-            </a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4">
+    <div class="container">
 
-            <!-- TOGGLE -->
-            <button class="navbar-toggler"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+        <a class="navbar-brand text-warning"
+           asp-controller="Home"
+           asp-action="Index">
+            <i class="fa-solid fa-shop me-2"></i>
+            TechShop
+        </a>
 
-            <!-- MENU -->
-            <div class="collapse navbar-collapse" id="navbarNav">
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-                <!-- LEFT MENU -->
-                <ul class="navbar-nav me-auto">
+        <div class="collapse navbar-collapse" id="navbarNav">
+
+            <ul class="navbar-nav me-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link"
+                       asp-controller="Home"
+                       asp-action="Index">
+                        Trang chủ
+                    </a>
+                </li>
+
+                @if (Context.Session.GetString("Role") == "Admin")
+                {
                     <li class="nav-item">
                         <a class="nav-link"
                            asp-controller="Product"
                            asp-action="Index">
-                            <i class="fa-solid fa-list me-1"></i>
-                            Danh sách sản phẩm
+                            Quản lý sản phẩm
                         </a>
                     </li>
+                }
 
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           asp-controller="Product"
-                           asp-action="Add">
-                            <i class="fa-solid fa-plus-circle me-1"></i>
-                            Thêm sản phẩm
-                        </a>
-                    </li>
-                </ul>
+            </ul>
 
-                <!-- 🔍 SEARCH PRODUCT -->
-                <form asp-controller="Product"
-                      asp-action="Index"
-                      method="get"
-                      class="d-flex me-3">
+            <a asp-controller="ShoppingCart"
+               asp-action="Index"
+               class="btn btn-outline-light me-3">
+                <i class="bi bi-cart-fill"></i>
+                Cart
+            </a>
 
-                    <input type="text"
-                           name="searchString"
-                           class="form-control me-2"
-                           style="width: 220px;"
-                           placeholder="Tìm sản phẩm..."
-                           value="@ViewBag.SearchString" />
+            @if (Context.Session.GetInt32("CustomerId") == null)
+            {
+                <a asp-controller="Account"
+                   asp-action="Login"
+                   class="btn btn-outline-light me-2">
+                    Đăng nhập
+                </a>
 
-                    <button class="btn btn-outline-warning" type="submit">
-                        <i class="fa-solid fa-magnifying-glass"></i>
+                <a asp-controller="Account"
+                   asp-action="Register"
+                   class="btn btn-warning">
+                    Đăng ký
+                </a>
+            }
+            else
+            {
+                var role = Context.Session.GetString("Role");
+
+                @if (role == "Admin")
+                {
+                    <a asp-controller="Product"
+                       asp-action="Add"
+                       class="btn btn-danger me-2">
+                        <i class="fa-solid fa-plus"></i>
+                        Thêm sản phẩm
+                    </a>
+
+                    <a asp-controller="Admin"
+                       asp-action="Users"
+                       class="btn btn-primary me-2">
+                        <i class="fa-solid fa-users"></i>
+                        Tài khoản
+                    </a>
+
+                    <a asp-controller="Admin"
+                       asp-action="Revenue"
+                       class="btn btn-success me-3">
+                        <i class="fa-solid fa-chart-line"></i>
+                        Doanh thu
+                    </a>
+                }
+
+                <div class="dropdown">
+                    <button class="btn btn-outline-light dropdown-toggle"
+                            data-bs-toggle="dropdown">
+
+                        <i class="fa-solid fa-user"></i>
+                        @Context.Session.GetString("CustomerName")
                     </button>
-                </form>
 
-                <!-- 🛒 CART -->
-                <form class="d-flex me-3">
-                    <button class="btn btn-outline-light" type="submit">
-                        <i class="bi-cart-fill me-1"></i>
-                        Cart
-                    </button>
-                </form>
+                    <ul class="dropdown-menu dropdown-menu-end">
 
-                <!-- ADMIN -->
-                <span class="navbar-text text-white-50">
-                    <i class="fa-solid fa-user me-1"></i>
-                    Admin Panel
-                </span>
+                        <li>
+                            <a class="dropdown-item"
+                               asp-controller="Customer"
+                               asp-action="Edit"
+                               asp-route-id="@Context.Session.GetInt32("CustomerId")">
+                                Thông tin khách hàng
+                            </a>
+                        </li>
 
-            </div>
-        </div>
-    </nav>
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
 
-    <!-- ===== MAIN CONTENT ===== -->
-    <div class="container main-content">
-        <div class="card shadow-sm p-4 mb-5 bg-white rounded">
-            @RenderBody()
+                        <li>
+                            <a class="dropdown-item text-danger"
+                               asp-controller="Account"
+                               asp-action="Logout">
+                                Đăng xuất
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            }
+
         </div>
     </div>
+</nav>
 
-    <!-- ===== FOOTER ===== -->
-    <footer class="py-3 mt-auto text-center border-top">
-        <div class="container">
-            <span>
-                &copy; 2026 - Website Bán Hàng Công Nghệ -
-                Thiết kế bởi C# Developer
-            </span>
-        </div>
-    </footer>
+<div class="container main-content">
+    @RenderBody()
+</div>
 
-    <!-- SCRIPT -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+<footer class="text-center py-3 mt-4">
+    <div class="container">
+        © 2026 - Website Bán Hàng Công Nghệ
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+@await RenderSectionAsync("Scripts", required: false)
+
 
 </body>
 </html>

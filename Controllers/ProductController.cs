@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Http;
 using website_ban_hang.Models;
 using website_ban_hang.Repositories;
+using website_ban_hang.Filters;
 using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -40,15 +41,29 @@ namespace website_ban_hang.Controllers
             return View(products);
         }
 
+        // ======================= DISPLAY =======================
+        public async Task<IActionResult> Display(int id)
+        {
+            var product = await _productRepository.GetByIdAsync(id);
+
+            if (product == null)
+                return NotFound();
+
+            return View(product);
+        }
+
         // ======================= ADD =======================
+        [AdminAuthorize]
         public async Task<IActionResult> Add()
         {
             var categories = await _categoryRepository.GetAllAsync();
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
+
             return View();
         }
 
         [HttpPost]
+        [AdminAuthorize]
         public async Task<IActionResult> Add(Product product, IFormFile imageUrl)
         {
             if (ModelState.IsValid)
@@ -59,58 +74,42 @@ namespace website_ban_hang.Controllers
                 }
 
                 await _productRepository.AddAsync(product);
+
                 return RedirectToAction(nameof(Index));
             }
 
             var categories = await _categoryRepository.GetAllAsync();
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
-            return View(product);
-        }
-
-        // ======================= SAVE IMAGE =======================
-        private async Task<string> SaveImage(IFormFile image)
-        {
-            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
-
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-            }
-
-            var filePath = Path.Combine(folderPath, image.FileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await image.CopyToAsync(stream);
-            }
-
-            return "/images/" + image.FileName;
-        }
-
-        // ======================= DISPLAY =======================
-        public async Task<IActionResult> Display(int id)
-        {
-            var product = await _productRepository.GetByIdAsync(id);
-            if (product == null)
-                return NotFound();
 
             return View(product);
         }
 
         // ======================= UPDATE =======================
+        [AdminAuthorize]
         public async Task<IActionResult> Update(int id)
         {
             var product = await _productRepository.GetByIdAsync(id);
+
             if (product == null)
                 return NotFound();
 
             var categories = await _categoryRepository.GetAllAsync();
-            ViewBag.Categories = new SelectList(categories, "Id", "Name", product.CategoryId);
+
+            ViewBag.Categories = new SelectList(
+                categories,
+                "Id",
+                "Name",
+                product.CategoryId);
+
             return View(product);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(int id, Product product, IFormFile imageUrl)
+        [AdminAuthorize]
+        public async Task<IActionResult> Update(
+            int id,
+            Product product,
+            IFormFile imageUrl)
         {
             ModelState.Remove("ImageUrl");
 
@@ -120,6 +119,7 @@ namespace website_ban_hang.Controllers
             if (ModelState.IsValid)
             {
                 var existingProduct = await _productRepository.GetByIdAsync(id);
+
                 if (existingProduct == null)
                     return NotFound();
 
@@ -139,18 +139,27 @@ namespace website_ban_hang.Controllers
                 existingProduct.ImageUrl = product.ImageUrl;
 
                 await _productRepository.UpdateAsync(existingProduct);
+
                 return RedirectToAction(nameof(Index));
             }
 
             var categories = await _categoryRepository.GetAllAsync();
-            ViewBag.Categories = new SelectList(categories, "Id", "Name", product.CategoryId);
+
+            ViewBag.Categories = new SelectList(
+                categories,
+                "Id",
+                "Name",
+                product.CategoryId);
+
             return View(product);
         }
 
         // ======================= DELETE =======================
+        [AdminAuthorize]
         public async Task<IActionResult> Delete(int id)
         {
             var product = await _productRepository.GetByIdAsync(id);
+
             if (product == null)
                 return NotFound();
 
@@ -158,10 +167,36 @@ namespace website_ban_hang.Controllers
         }
 
         [HttpPost, ActionName("DeleteConfirmed")]
+        [AdminAuthorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _productRepository.DeleteAsync(id);
+
             return RedirectToAction(nameof(Index));
+        }
+
+        // ======================= SAVE IMAGE =======================
+        private async Task<string> SaveImage(IFormFile image)
+        {
+            var folderPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot/images");
+
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+
+            var fileName = Guid.NewGuid() + Path.GetExtension(image.FileName);
+
+            var filePath = Path.Combine(folderPath, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await image.CopyToAsync(stream);
+            }
+
+            return "/images/" + fileName;
         }
     }
 }

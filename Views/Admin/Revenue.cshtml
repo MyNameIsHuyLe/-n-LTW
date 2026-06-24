@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Thống kê doanh thu";
+}
+
+<div class="card shadow p-4">
+
+    <h2 class="text-center mb-4">
+        📊 Thống kê doanh thu
+    </h2>
+
+    <div class="alert alert-success">
+        <h4>
+            Tổng doanh thu:
+            @ViewBag.TotalRevenue.ToString("N0") VNĐ
+        </h4>
+    </div>
+
+    <div class="alert alert-primary">
+        <h4>
+            Tổng số đơn hàng:
+            @ViewBag.TotalOrders
+        </h4>
+    </div>
+
+</div>

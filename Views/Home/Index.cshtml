@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Home Page";
-    // 1. Khai báo số lượng mặc định khi click Add to Cart theo slide bài học
+    // 1. Định nghĩa biến số lượng mặc định như trong ảnh
     int numOfQuantity = 1;
 }
 
@@ -18,17 +18,17 @@
 
                         <div class="card-body">
                             <h5 class="card-title">@Html.DisplayFor(modelItem => item.Name)</h5>
-
+                            
                             <div class="d-flex">
                                 <span>Price: </span>
-                                <p class="ms-2 fw-bold text-danger">@item.Price.ToString("#,##0") Vnđ</p>
+                                <p class="mx-3">@item.Price.ToString("#,##0") Vnđ</p>
                             </div>
 
                             <a asp-controller="ShoppingCart"
-                               asp-action="AddToCart"
-                               asp-route-productId="@item.Id"
-                               asp-route-quantity="@numOfQuantity">
-                                <button class="btn btn-outline-dark w-100">
+                                   asp-action="AddToCart"
+                                   asp-route-productId="@item.Id"
+                                   asp-route-quantity="@numOfQuantity">
+                                <button class="btn btn-outline-dark">
                                     <i class="bi-cart-fill me-1"></i> Add to Cart
                                 </button>
                             </a>

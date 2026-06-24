@@ -4,78 +4,124 @@
     ViewData["Title"] = "Giỏ Hàng Của Bạn";
 }
 
-<div class="container my-4">
-    <h2 class="mb-4 text-dark"><i class="bi bi-cart3 me-2"></i>Your Cart (Giỏ hàng)</h2>
+<h2 class="mb-4">
+    <i class="bi bi-cart-fill"></i>
+    Giỏ Hàng Của Bạn
+</h2>
 
-    @if (Model != null && Model.Items.Any())
-    {
-        <div class="table-responsive shadow-sm rounded bg-white">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-dark">
+@if (Model != null && Model.Items != null && Model.Items.Any())
+{
+    <div class="table-responsive shadow-sm rounded bg-white">
+        <table class="table table-hover align-middle mb-0">
+
+            ```
+            <thead class="table-dark">
+                <tr>
+                    <th class="py-3">Sản phẩm</th>
+                    <th class="py-3">Số lượng</th>
+                    <th class="py-3">Đơn giá</th>
+                    <th class="py-3">Thành tiền</th>
+                    <th class="py-3 text-center">Thao tác</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
                     <tr>
-                        <th scope="col" class="py-3">Product (Sản phẩm)</th>
-                        <th scope="col" class="py-3 text-center">Quantity (Số lượng)</th>
-                        <th scope="col" class="py-3 text-end">Price (Đơn giá)</th>
-                        <th scope="col" class="py-3 text-end">Total (Thành tiền)</th>
-                        <th scope="col" class="py-3 text-center">Action (Hành động)</th>
+                        <td>@item.Name</td>
+
+                        <td>@item.Quantity</td>
+
+                        <td>
+                            @item.Price.ToString("#,##0") VNĐ
+                        </td>
+
+                        <td>
+                            @((item.Price * item.Quantity).ToString("#,##0")) VNĐ
+                        </td>
+
+                        <td class="text-center">
+                            <a asp-controller="ShoppingCart"
+                               asp-action="RemoveFromCart"
+                               asp-route-productId="@item.ProductId"
+                               class="btn btn-outline-danger btn-sm"
+                               onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">
+
+                                <i class="bi bi-trash"></i>
+                                Xóa
+                            </a>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.Items)
-                    {
-                        <tr>
-                            <td class="fw-bold text-secondary">@item.Name</td>
+                }
+            </tbody>
 
-                            <td class="text-center">
-                                <span class="badge bg-light text-dark fs-6 border px-3 py-2">@item.Quantity</span>
-                            </td>
+        </table>
+    </div>
 
-                            <td class="text-end text-muted">@item.Price.ToString("#,##0") Vnđ</td>
+    <div class="row mt-4 align-items-center">
 
-                            <td class="text-end fw-bold text-danger">
-                                @((item.Price * item.Quantity).ToString("#,##0")) Vnđ
-                            </td>
+        <div class="col-md-6 mb-3 mb-md-0">
 
-                            <td class="text-center">
-                                <a asp-controller="ShoppingCart" asp-action="RemoveFromCart" asp-route-productId="@item.ProductId"
-                                   class="btn btn-outline-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">
-                                    <i class="bi bi-trash"></i> Xóa
-                                </a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="btn btn-outline-secondary">
 
-        <div class="row mt-4 align-items-center">
-            <div class="col-md-6 mb-3 mb-md-0">
-                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left me-1"></i> Tiếp tục mua sắm
-                </a>
-            </div>
-            <div class="col-md-6 text-md-end">
-                <h4 class="mb-3">
-                    Tổng tiền thanh toán:
-                    <span class="text-danger fw-bold">
-                        @Model.Items.Sum(i => i.Price * i.Quantity).ToString("#,##0") Vnđ
-                    </span>
-                </h4>
-                <a asp-controller="Order" asp-action="Checkout" class="btn btn-success btn-lg px-4 shadow-sm">
-                    <i class="bi bi-credit-card-2-front me-1"></i> Tiến hành đặt hàng
-                </a>
-            </div>
-        </div>
-    }
-    else
-    {
-        <div class="text-center py-5 shadow-sm bg-white rounded">
-            <i class="bi bi-cart-x text-muted mb-3" style="font-size: 4rem;"></i>
-            <h4 class="text-secondary">Giỏ hàng của bạn đang trống!</h4>
-            <p class="text-muted mb-4">Hãy quay lại trang chủ và lựa chọn các sản phẩm công nghệ ưng ý nhé.</p>
-            <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4 py-2 shadow-sm">
-                <i class="bi bi-house-door me-1"></i> Quay về Trang Chủ
+                <i class="bi bi-arrow-left"></i>
+                Tiếp tục mua sắm
             </a>
+
         </div>
-    }
-</div>
+
+        <div class="col-md-6 text-md-end">
+
+            <h4 class="mb-3">
+                Tổng tiền:
+
+                <span class="text-danger fw-bold">
+                    @Model.Items.Sum(i => i.Price * i.Quantity).ToString("#,##0") VNĐ
+                </span>
+            </h4>
+
+            <a asp-controller="ShoppingCart"
+               asp-action="Checkout"
+               class="btn btn-success btn-lg px-4 shadow-sm">
+
+                <i class="bi bi-credit-card-2-front"></i>
+                Thanh toán
+            </a>
+
+        </div>
+
+    </div>
+
+}
+else
+{
+
+    <div class="text-center py-5 shadow-sm bg-white rounded">
+
+        ```
+        <i class="bi bi-cart-x text-muted"
+           style="font-size:4rem;"></i>
+
+        <h4 class="mt-3 text-secondary">
+            Giỏ hàng của bạn đang trống!
+        </h4>
+
+        <p class="text-muted">
+            Hãy chọn sản phẩm trước khi thanh toán.
+        </p>
+
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="btn btn-primary">
+
+            <i class="bi bi-house-door"></i>
+            Tiếp tục mua sắm
+        </a>
+
+    </div>
+
+
+}
